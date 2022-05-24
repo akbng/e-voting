@@ -1,0 +1,27 @@
+{
+  "name": "e-voting",
+  "version": "0.1.0",
+  "description": "",
+  "main": "contracts/Base.sol",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "truffle test --network development"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ankanbag101/e-voting.git"
+  },
+  "author": "Ankan Bag",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ankanbag101/e-voting/issues"
+  },
+  "homepage": "https://github.com/ankanbag101/e-voting#readme",
+  "devDependencies": {
+    "casual": "^1.6.2",
+    "chai": "^4.3.6",
+    "truffle-contract-size": "^2.0.1"
+  }
+}
