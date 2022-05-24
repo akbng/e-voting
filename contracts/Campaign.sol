@@ -60,12 +60,12 @@ contract Campaign {
         require(
             isCommissionMember(msg.sender) ||
                 isCommissionSuperVisor(msg.sender),
-            "Only a member or owner can verify!"
+            "Only a member or superVisor can verify!"
         );
         _;
     }
 
-    modifier ownerNotAllowed() {
+    modifier superVisorNotAllowed() {
         require(!isCommissionSuperVisor(msg.sender), "SuperVisor can not vote");
         _;
     }
@@ -99,7 +99,7 @@ contract Campaign {
     // user needs to apply for voting before the voting starts
     // some authority might would approve them after that they can vote
     // otherwise there will vote spamming all over the place
-    function applyVoter() public {
+    function applyVoter() public superVisorNotAllowed membersNotAllowed {
         require(!votingEnded(), "Cannot apply after voting has ended");
         require(!votingStarted(), "Cannot apply after voting has started");
         votersList.push(msg.sender);
@@ -118,7 +118,7 @@ contract Campaign {
         );
         require(
             !isCommissionSuperVisor(_voter),
-            "Cannot verify the owner as a voter"
+            "Cannot verify the superVisor as a voter"
         );
         Voter storage voter = _voters[_voter];
         voter.approvalCount++;
@@ -140,7 +140,7 @@ contract Campaign {
     }
 
     // function to vote for a candidate
-    function vote(uint8 _to) external ownerNotAllowed membersNotAllowed {
+    function vote(uint8 _to) external superVisorNotAllowed membersNotAllowed {
         require(votingStarted(), "Voting period has not started yet!");
         require(!votingEnded(), "Voting period has ended!");
         require(voterIsVerified(), "Voter has no right to vote");
