@@ -10,7 +10,7 @@ contract Base is Commission {
         bool approved;
         uint8 approvalCount;
         address contractAddress;
-        address superVisor;
+        address owner;
         address[] approvedBy;
     }
 
@@ -27,13 +27,13 @@ contract Base is Commission {
     mapping(bytes32 => uint256) proposalToPosition;
 
     address public superVisor;
-    mapping(address => SuperVisor) ownerInfo;
+    mapping(address => SuperVisor) superVisorInfo;
 
     constructor(address[] memory commissionMembers)
         Commission(commissionMembers)
     {
         superVisor = msg.sender;
-        ownerInfo[superVisor].lastActive = uint64(block.timestamp);
+        superVisorInfo[superVisor].lastActive = uint64(block.timestamp);
     }
 
     modifier onlySuperVisor() {
@@ -73,7 +73,7 @@ contract Base is Commission {
         members[numOfMembers] = _member;
         membersIndex[_member] = numOfMembers;
         numOfMembers++;
-        ownerInfo[superVisor].lastActive = uint64(block.timestamp);
+        superVisorInfo[superVisor].lastActive = uint64(block.timestamp);
     }
 
     // only the super visor can remove member from the commission given certain condition is satisfied
@@ -85,13 +85,13 @@ contract Base is Commission {
             member.reports > member.reputation,
             "can not remove a well reputed member"
         );
-        ownerInfo[superVisor].lastActive = uint64(block.timestamp);
+        superVisorInfo[superVisor].lastActive = uint64(block.timestamp);
         remove(getMemberIndex(_user));
     }
 
     // internal function to remove the supervisor
     function removeSuperVisor() internal {
-        ownerInfo[superVisor].removed = true;
+        superVisorInfo[superVisor].removed = true;
         uint256 index = findMostTrustedMember();
         superVisor = getMember(index);
         remove(index);
@@ -99,7 +99,7 @@ contract Base is Commission {
 
     // internal function to demote the supervisor
     function demoteSuperVisor() internal {
-        ownerInfo[superVisor].removed = true;
+        superVisorInfo[superVisor].removed = true;
         uint256 index = findMostTrustedMember();
         address trustedMember = getMember(index);
         memberInfo[trustedMember].removed = true;
@@ -113,7 +113,7 @@ contract Base is Commission {
     }
 
     function getSuperVisorInfo() public view returns (SuperVisor memory) {
-        return ownerInfo[superVisor];
+        return superVisorInfo[superVisor];
     }
 
     function getHash(bytes32 _name) internal pure returns (bytes32) {
